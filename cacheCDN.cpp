@@ -1,19 +1,20 @@
 #include "cacheCDN.h"
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <vector>
 
 /* Implement any functions and methods here! */
 using namespace ICS45C::CDN;
 using std::ofstream;
 
 template <typename T>
-Cache<T>::Cache(unsigned int freshnessCount)
-    : freshnessCount(freshnessCount) {
-      std::map<std::string, info> files = files;
-    }
+Cache<T>::Cache(unsigned int freshnessCount) : freshnessCount(freshnessCount) {
+  std::map<std::string, Info> files = files;
+}
 
 template <typename T>
 Cache<T>::~Cache() {
@@ -38,15 +39,11 @@ std::string Cache<T>::getText(std::string filepath) {
     infile.close();
 
     text = streamText.str();
-    files[filepath].freshness++;
-    files[filepath].text = text;
 
-  } else if (files[filepath].freshness < freshnessCount ||
-             files[filepath].freshness > freshnessCount) {
-    // exists in map, Still fresh OR exceeds freshnessCount
-    // return contents saved in files
-    files[filepath].freshness++;
+    files[filepath].text = text;
+    files[filepath].accessed++;
   }
+  files[filepath].freshness++;
   return files[filepath].text;
 }
 
@@ -54,7 +51,8 @@ template <typename T>
 char* Cache<T>::getBinary(std::string filepath) {
   std::streampos size;
   char* memBlock;
-  std::ifstream inBinaryFile(filepath, std::ios::in | std::ios::binary | std::ios::ate);
+  std::ifstream inBinaryFile(filepath,
+                             std::ios::in | std::ios::binary | std::ios::ate);
 
   if (inBinaryFile.is_open()) {
     size = inBinaryFile.tellg();
@@ -78,29 +76,86 @@ char* Cache<T>::getBinary(std::string filepath) {
 
 template <typename T>
 bool Cache<T>::isCached(std::string filepath) {
-  return true;
+  for (auto file : files) {
+    if (filepath == file.first) {
+      return true;
+    }
+  }
+  return false;
 }
 
 template <typename T>
 unsigned int Cache<T>::getFreshness(std::string filepath) {
-  return 1;
+  unsigned int currFreshness = files[filepath].freshness;
+  if (currFreshness >= freshnessCount || currFreshness == 0) {
+    return 0;
+  } else {
+    return freshnessCount - currFreshness;
+  }
 }
 
 template <typename T>
 void Cache<T>::markFileFresh(std::string filepath) {
+  if (files.find(filepath) != files.end()) {
+    // exists
+    files[filepath].freshness = 0;
+  }
 }
 
 template <typename T>
-void Cache<T>::purgeCache() {}
+void Cache<T>::purgeCache() {
+  files.clear();
+}
 
 template <typename T>
 std::string Cache<T>::topFile() {
-  return "Placeholder";
+  // Info empty = {"None", 0};
+  unsigned int size = files.size();
+  std::vector<unsigned int> allFreshness;
+
+  for (auto file : files) {
+    allFreshness.push_back(file.second.freshness);
+  }
+
+  unsigned int max =
+      *std::max_element(allFreshness.begin(), allFreshness.end());
+
+  if (size == 0) {
+    return "";
+  } else {
+    for (auto file : files) {
+      if (max == file.second.freshness) {
+        return file.first;
+      }
+    }
+  }
 }
 
 template <typename T>
 std::string Cache<T>::getStats() {
-  return "Placeholder";
+  std::stringstream Stats;
+  unsigned int totalReqs = 0;
+  unsigned int totalFiles = 0;
+  unsigned int averageReqs = 0;
+  unsigned int totalReads = 0;
+  unsigned int size = files.size();
+  std::string top = topFile();
+
+  if (size != 0) {
+    for (auto file : files) {
+      totalReqs += file.second.freshness;
+      totalFiles++;
+      totalReads += file.second.accessed;
+    }
+  }
+
+  Stats << "Total requests: " << totalReqs << "\n";
+  Stats << "Total Files requested: " << totalFiles << "\n";
+  Stats << "Average requests per file: " << averageReqs << "\n";
+  Stats << "Top file: " << top << "(" << files[top].freshness << "requests)\n";
+  Stats << "Total times read from disk: " << totalReads << "\n";
+
+  return Stats.str();
 }
 
 int main() {

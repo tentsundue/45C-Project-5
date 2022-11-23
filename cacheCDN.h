@@ -8,9 +8,10 @@
 namespace ICS45C {
 namespace CDN {
 
-struct info {
+struct Info {
   std::string text;
   unsigned int freshness = 0;
+  unsigned int accessed = 0;
 };
 
 /* Define your class here! */
@@ -18,7 +19,7 @@ template <typename T>
 class Cache {
  private:
   unsigned int freshnessCount = 0;
-  std::map<std::string, info> files;
+  std::map<std::string, Info> files;
 
  public:
   Cache(unsigned int freshnessCount);

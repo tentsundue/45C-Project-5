@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <map>
 #include <sstream>
@@ -136,7 +137,6 @@ std::string Cache<T>::getStats() {
   std::stringstream Stats;
   unsigned int totalReqs = 0;
   unsigned int totalFiles = 0;
-  unsigned int averageReqs = 0;
   unsigned int totalReads = 0;
   unsigned int size = files.size();
   std::string top = topFile();
@@ -148,13 +148,17 @@ std::string Cache<T>::getStats() {
       totalReads += file.second.accessed;
     }
   }
-
+  unsigned int averageReqs = totalReqs / totalFiles;
+  Stats << "Cache Stats\n";
+  Stats << "----------\n";
   Stats << "Total requests: " << totalReqs << "\n";
   Stats << "Total Files requested: " << totalFiles << "\n";
+  Stats << std::fixed;
+  Stats << std::setprecision(2);
   Stats << "Average requests per file: " << averageReqs << "\n";
   Stats << "Top file: " << top << "(" << files[top].freshness << "requests)\n";
   Stats << "Total times read from disk: " << totalReads << "\n";
-
+  Stats << "----------\n";
   return Stats.str();
 }
 

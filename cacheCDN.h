@@ -11,7 +11,8 @@ namespace CDN {
 struct info {
   std::string text;
   unsigned int freshness = 0;
-} info;
+};
+
 /* Define your class here! */
 template <typename T>
 class Cache {

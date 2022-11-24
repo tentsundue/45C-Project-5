@@ -7,24 +7,22 @@
 #include <map>
 #include <sstream>
 #include <vector>
-
-/* Implement any functions and methods here! */
-using namespace ICS45C::CDN;
 using std::ofstream;
 
-template <typename T>
-Cache<T>::Cache(unsigned int freshnessCount) : freshnessCount(freshnessCount) {
+/* Implement any functions and methods here! */
+namespace ICS45C {
+namespace CDN {
+
+Cache::Cache(unsigned int freshnessCount) : freshnessCount(freshnessCount) {
   std::map<std::string, Info> files = files;
 }
 
-template <typename T>
-Cache<T>::~Cache() {
+Cache::~Cache() {
   // need to look up how to destroy a binary file
   // No need to focus on text files here
 }
 
-template <typename T>
-std::string Cache<T>::getText(std::string filepath) {
+std::string Cache::getText(std::string filepath) {
   // How to go about determining fresh copies??
   if (files.find(filepath) == files.end() ||
       files[filepath].freshness == freshnessCount) {
@@ -48,8 +46,7 @@ std::string Cache<T>::getText(std::string filepath) {
   return files[filepath].text;
 }
 
-template <typename T>
-char* Cache<T>::getBinary(std::string filepath) {
+char* Cache::getBinary(std::string filepath) {
   std::streampos size;
   char* memBlock;
   std::ifstream inBinaryFile(filepath,
@@ -75,8 +72,7 @@ char* Cache<T>::getBinary(std::string filepath) {
   return 0;
 }
 
-template <typename T>
-bool Cache<T>::isCached(std::string filepath) {
+bool Cache::isCached(std::string filepath) {
   for (auto file : files) {
     if (filepath == file.first) {
       return true;
@@ -85,8 +81,7 @@ bool Cache<T>::isCached(std::string filepath) {
   return false;
 }
 
-template <typename T>
-unsigned int Cache<T>::getFreshness(std::string filepath) {
+unsigned int Cache::getFreshness(std::string filepath) {
   unsigned int currFreshness = files[filepath].freshness;
   if (currFreshness >= freshnessCount || currFreshness == 0) {
     return 0;
@@ -95,21 +90,16 @@ unsigned int Cache<T>::getFreshness(std::string filepath) {
   }
 }
 
-template <typename T>
-void Cache<T>::markFileFresh(std::string filepath) {
+void Cache::markFileFresh(std::string filepath) {
   if (files.find(filepath) != files.end()) {
     // exists
     files[filepath].freshness = 0;
   }
 }
 
-template <typename T>
-void Cache<T>::purgeCache() {
-  files.clear();
-}
+void Cache::purgeCache() { files.clear(); }
 
-template <typename T>
-std::string Cache<T>::topFile() {
+std::string Cache::topFile() {
   // Info empty = {"None", 0};
   unsigned int size = files.size();
   std::vector<unsigned int> allFreshness;
@@ -132,8 +122,7 @@ std::string Cache<T>::topFile() {
   }
 }
 
-template <typename T>
-std::string Cache<T>::getStats() {
+std::string Cache::getStats() {
   std::stringstream Stats;
   unsigned int totalReqs = 0;
   unsigned int totalFiles = 0;
@@ -166,3 +155,5 @@ int main() {
   // For compilation checks
   return 0;
 }
+}  // namespace CDN
+}  // namespace ICS45C

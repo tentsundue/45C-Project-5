@@ -10,15 +10,14 @@ namespace CDN {
 
 struct Info {
   std::string text;
-  unsigned int freshness = 0;
-  unsigned int accessed = 0;
+  unsigned int freshness;
+  unsigned int accessed;
 };
 
 /* Define your class here! */
-template <typename T>
 class Cache {
  private:
-  unsigned int freshnessCount = 0;
+  unsigned int freshnessCount;
   std::map<std::string, Info> files;
 
  public:

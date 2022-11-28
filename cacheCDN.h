@@ -21,7 +21,11 @@ class Cache {
  private:
   unsigned int freshnessCount;
   std::map<std::string, Info> files;
-  std::vector<std::string> fileNames;
+  std::map<std::string, float> freshTracker;
+  // std::vector<std::string> fileNames;
+  float totalFiles;
+  float totalRequests;
+  unsigned int totalReads;
 
  public:
   Cache(unsigned int freshnessCount);

@@ -6,7 +6,7 @@
 using namespace std;
 
 int main() {
-  ICS45C::CDN::Cache myCache(2);
+  ICS45C::CDN::Cache myCache(10);
   string file = "p5-text.txt";
 //   cout << myCache.getFreshness(file) << endl;
 
@@ -14,23 +14,23 @@ int main() {
   outFile.open(file);
   outFile << "hello";
   outFile.close();
-  myCache.getText(file);
+//   myCache.getText(file);
 //   cout << myCache.getFreshness(file) << endl;
 //   cout << myCache.getFreshness(file) << endl;
-  myCache.purgeCache();
+//   myCache.purgeCache();
 //   cout << myCache.getFreshness(file) << endl;
-  //   for (int i = 0; i < 23; i++) {
-  //     myCache.getText(file);
-  //     // cout << "Freshness: " << myCache.fresh(file) << endl;
-  //   }
+    for (int i = 0; i < 23; i++) {
+      myCache.getText(file);
+      // cout << "Freshness: " << myCache.fresh(file) << endl;
+    }
   //   //   cout << myCache.getStats();
-  //   myCache.purgeCache();
-  //   myCache.getText(file);
+    myCache.purgeCache();
+    myCache.getText(file);
   //   //   cout << myCache.getStats();
-  //   myCache.purgeCache();
-  //   myCache.getText(file);
+    myCache.purgeCache();
+    myCache.getText(file);
 
-  //   cout << myCache.getStats();
+    cout << myCache.getStats();
 
   //   myCache.markFileFresh(file);
   //     cout << myCache.getFreshness(file) << endl;

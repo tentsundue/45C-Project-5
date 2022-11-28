@@ -52,7 +52,11 @@ std::string Cache::getText(std::string filepath) {
   files[filepath].freshness++;
   files[filepath].totalFreshness++;
   totalRequests++;
-  freshTracker[filepath]++;
+
+  // Adding file to vector if it doesn't already exist
+  if (freshTracker.find(filepath) == freshTracker.end()) {
+    freshTracker[filepath]++;
+  }
   return files[filepath].text;
 }
 
@@ -151,8 +155,7 @@ std::string Cache::getStats() {
   Stats << std::fixed;
   Stats << std::setprecision(2);
   Stats << "Average requests per file: " << averageRequests << "\n";
-  Stats << "Top file: " << top << " (" << (int)freshTracker[top]
-        << " requests)\n";
+  Stats << "Top file: " << top << " (" << freshTracker[top] << " requests)\n";
   Stats << "Total times read from disk: " << totalReads << "\n";
   Stats << "----------\n";
   return Stats.str();
